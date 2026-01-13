@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer Presentasi SISFO FEST</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; }
+        .blink { animation: blinker 1s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
+    </style>
+</head>
+<body class="bg-slate-900 text-white h-screen flex flex-col items-center justify-center overflow-hidden">
+
+    <!-- Header -->
+    <div class="absolute top-8 text-center opacity-80">
+        <h1 class="text-3xl font-bold tracking-widest text-indigo-400">SISFO FEST 2025</h1>
+        <p class="text-sm text-slate-400 uppercase tracking-widest mt-1">Sesi Presentasi Finalis UI/UX</p>
+    </div>
+
+    <!-- Main Timer Display -->
+    <div class="relative z-10">
+        <div id="timer-display" class="text-[12rem] font-bold tabular-nums leading-none tracking-tighter text-white drop-shadow-2xl">
+            10:00
+        </div>
+        <div id="status-text" class="text-center text-4xl font-semibold mt-4 text-emerald-400">
+            READY
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="w-3/4 h-4 bg-slate-800 rounded-full mt-12 overflow-hidden border border-slate-700">
+        <div id="progress-bar" class="h-full bg-emerald-500 transition-all duration-1000 ease-linear" style="width: 100%"></div>
+    </div>
+
+    <!-- Controls (Hidden on hover if needed, but useful for operator) -->
+    <div class="absolute bottom-10 flex gap-4 p-4 bg-slate-800/50 rounded-2xl backdrop-blur-sm hover:opacity-100 transition-opacity opacity-30 hover:opacity-100">
+        <div class="flex items-center gap-2 border-r border-slate-600 pr-4">
+            <label class="text-xs text-slate-400">Menit:</label>
+            <input type="number" id="input-minutes" value="10" class="w-16 bg-slate-700 border border-slate-600 rounded px-2 py-1 text-center font-bold focus:outline-none focus:border-indigo-500">
+        </div>
+        
+        <button onclick="startTimer()" class="bg-emerald-600 hover:bg-emerald-500 px-6 py-2 rounded-lg font-bold shadow-lg transition-transform active:scale-95 flex items-center gap-2">
+            ▶ Mulai
+        </button>
+        <button onclick="pauseTimer()" class="bg-yellow-600 hover:bg-yellow-500 px-6 py-2 rounded-lg font-bold shadow-lg transition-transform active:scale-95">
+            ⏸ Pause
+        </button>
+        <button onclick="resetTimer()" class="bg-red-600 hover:bg-red-500 px-6 py-2 rounded-lg font-bold shadow-lg transition-transform active:scale-95">
+            ⏹ Reset
+        </button>
+    </div>
+
+    <!-- Audio Beep (Optional) -->
+    <script>
+        let totalSeconds = 600;
+        let remainingSeconds = 600;
+        let interval = null;
+        let isRunning = false;
+
+        const display = document.getElementById('timer-display');
+        const statusText = document.getElementById('status-text');
+        const progressBar = document.getElementById('progress-bar');
+        const inputMinutes = document.getElementById('input-minutes');
+
+        function updateDisplay() {
+            const m = Math.floor(remainingSeconds / 60);
+            const s = remainingSeconds % 60;
+            display.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            
+            // Progress Bar Logic
+            const percentage = (remainingSeconds / totalSeconds) * 100;
+            progressBar.style.width = `${percentage}%`;
+
+            // Color Logic
+            if (remainingSeconds <= 10) {
+                // Critical (Red Blink)
+                display.classList.add('text-red-500', 'blink');
+                display.classList.remove('text-white', 'text-yellow-400');
+                progressBar.className = 'h-full bg-red-600 transition-all duration-1000 ease-linear';
+                statusText.innerText = "WAKTU HABIS!";
+                statusText.className = "text-center text-4xl font-semibold mt-4 text-red-500 blink";
+            } else if (remainingSeconds <= 60) {
+                // Warning (Yellow)
+                display.classList.add('text-yellow-400');
+                display.classList.remove('text-white', 'text-red-500', 'blink');
+                progressBar.className = 'h-full bg-yellow-500 transition-all duration-1000 ease-linear';
+                statusText.innerText = "WARNING";
+                statusText.className = "text-center text-4xl font-semibold mt-4 text-yellow-400";
+            } else {
+                // Normal (White/Green)
+                display.classList.add('text-white');
+                display.classList.remove('text-yellow-400', 'text-red-500', 'blink');
+                progressBar.className = 'h-full bg-emerald-500 transition-all duration-1000 ease-linear';
+                statusText.innerText = "PRESENTING...";
+                statusText.className = "text-center text-4xl font-semibold mt-4 text-emerald-400";
+            }
+        }
+
+        function startTimer() {
+            if (isRunning) return;
+            
+            // Set initial time from input only if starting from fresh or reset
+            if (remainingSeconds === totalSeconds || remainingSeconds === 0) {
+                totalSeconds = parseInt(inputMinutes.value) * 60;
+                // If we are at 0, reset to full time
+                if (remainingSeconds === 0) remainingSeconds = totalSeconds;
+                else remainingSeconds = totalSeconds; // Normal start
+            }
+
+            isRunning = true;
+            statusText.innerText = "PRESENTING...";
+            
+            interval = setInterval(() => {
+                if (remainingSeconds > 0) {
+                    remainingSeconds--;
+                    updateDisplay();
+                } else {
+                    clearInterval(interval);
+                    isRunning = false;
+                    statusText.innerText = "TIME'S UP!";
+                    // Play sound if needed
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(interval);
+            isRunning = false;
+            statusText.innerText = "PAUSED";
+            statusText.className = "text-center text-4xl font-semibold mt-4 text-slate-400";
+            display.classList.remove('blink');
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            totalSeconds = parseInt(inputMinutes.value) * 60;
+            remainingSeconds = totalSeconds;
+            statusText.innerText = "READY";
+            statusText.className = "text-center text-4xl font-semibold mt-4 text-emerald-400";
+            display.classList.remove('text-red-500', 'text-yellow-400', 'blink');
+            display.classList.add('text-white');
+            updateDisplay();
+        }
+
+        // Init
+        inputMinutes.addEventListener('change', () => {
+            if (!isRunning) resetTimer();
+        });
+        resetTimer();
+    </script>
+</body>
+</html>
