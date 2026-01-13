@@ -1,10 +1,10 @@
 # 🏆 Sistem Penjurian Real-Time (SISFO FEST 2025)
 
-Halo! 👋 Ini adalah proyek aplikasi web pertama yang saya buat untuk kebutuhan **Real Case** (kasus nyata), yaitu kompetisi UI/UX Design di acara SISFO FEST 2025.
+Halo! Ini adalah proyek aplikasi web pertama yang saya buat untuk kebutuhan **Real Case** (kasus nyata), yaitu kompetisi UI/UX Design di acara SISFO FEST 2025.
 
 Aplikasi ini dibuat agar Dewan Juri bisa memberikan nilai secara digital, dan panitia (Admin) bisa melihat rekapitulasi nilai secara **Real-time** tanpa perlu hitung manual pakai Excel lagi.
 
-🔗 **Link Demo:** [Masukkan Link Netlify Kamu Di Sini]
+🔗 **Link Demo:** [https://helpful-syrniki-c7e428.netlify.app ]
 
 ## 🛠️ Teknologi yang Saya Pelajari & Pakai
 Jujur, saya masih dalam tahap belajar coding, dan di proyek ini saya menantang diri sendiri untuk menggunakan teknologi modern:
